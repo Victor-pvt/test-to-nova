@@ -8,6 +8,7 @@
 
 namespace App;
 
+use Doctrine\DBAL\Configuration;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -17,17 +18,22 @@ use Exception;
 
 class App
 {
+    /** @var mixed  */
     private $config;
+    /** @var array|mixed  */
     private $routes = [];
-    private $dbal;
+    /** @var \Doctrine\DBAL\Connection  */
+    private $connection;
+    /** @var Twig_Environment  */
     private $twig;
+    /** @var bool  */
     private $isAuth=false;
+    /** @var Twig_Loader_Filesystem  */
     private $loader;
-
-
 
     /**
      * Конструктор класса
+     * задаем параметры системы, роуты, переменные
      */
     function __construct()
     {
@@ -41,10 +47,15 @@ class App
         $this->twig = new Twig_Environment($this->loader, array(
             'cache' => PATH_CACHE,
         ));
+
+        $config = new \Doctrine\DBAL\Configuration();
+        $this->connection = \Doctrine\DBAL\DriverManager::getConnection($this->config['dbal'], $config);
     }
 
     /**
      * Обработка входящего запроса
+     * при обработке проверяем полученный путь, сверяем с имеющимся в параметрах, при наличие, подключаем нужный контроллер
+     * если путь не найден, переводим на 404
      */
     public function run()
     {
@@ -62,6 +73,7 @@ class App
         } else {
             $className = 'Exeption\\ExeptionController';
             $action = '_404Action';
+            $response->setStatusCode(404);
             $controller = new $className($this);
         }
 
@@ -76,12 +88,39 @@ class App
         }
     }
 
-    public function AuthOn(User $user)
+    /**
+     * записываем в сессию токе текущего юзера, сессия авторизована
+     */
+    public function AuthOn()
     {
+        $session = new Session();
+        if(!$session->get('user_id')){
+            $session->set('user_id', 'token');
+            $this->isAuth = true;
+        }
+
+//        session_start();
+//        $path = '/';
+//        $_SESSION['user_id'] = $user->id;
+//        $this->user = $user;
+//        if (isset($_SESSION['path_referer'])) {
+////            $path = $_SESSION['path_referer'];
+//            unset($_SESSION['path_referer']);
+//        }
+//        return $path;
+
     }
 
+    /**
+     * удаляем из сессии токен юзера, выход из системы
+     */
     public function AuthOff()
     {
+        $session = new Session();
+        if($session->get('user_id')){
+            $session->remove('user_id');
+            $this->isAuth = false;
+        }
     }
 
     /**
@@ -99,4 +138,13 @@ class App
     {
         return $this->twig;
     }
+
+    /**
+     * @return \Doctrine\DBAL\Connection
+     */
+    public function getConnection()
+    {
+        return $this->connection;
+    }
+
 }

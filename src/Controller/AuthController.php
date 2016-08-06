@@ -42,8 +42,8 @@ class AuthController extends Controller
         /** @var App $app */
         $app = $this->app;
         $twig = $app->getTwig();
-        echo $twig->render('login.html.twig', ['name' => 'logout']);
+        $app->AuthOff();
+
+        echo $twig->render('home.html.twig', ['name' => 'До свидания']);
     }
-
-
 }
