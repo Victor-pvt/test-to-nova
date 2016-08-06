@@ -21,6 +21,9 @@
         {% endblock %}
     </head>
     <body>
+
+    {% set user_id = session.get('user_id') %}
+
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <div class="container">
             <div class="navbar-header">
@@ -32,15 +35,17 @@
                 </button>
                 <a class="navbar-brand" href="/">Home</a>
             </div>
+            {% if not user_id %}
             <form class="navbar-form navbar-right" role="form" action="" method="post">
                 <a href="/login" class="btn btn-success"><i class="fa fa-user-md"></i>login</a>
                 <a href="/register" class="btn btn-success"><i class="fa fa-user-md"></i>register</a>
-
             </form>
+            {% else %}
             <form class="navbar-form navbar-right" role="form" action="">
                 <a href="/logout"  class="btn btn-success"> <span class="glyphicon glyphicon-log-out"></span>
                     logout</a>
             </form>
+            {% endif %}
             <!--/.navbar-collapse -->
         </div>
     </div>

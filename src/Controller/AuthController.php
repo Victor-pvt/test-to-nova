@@ -11,32 +11,40 @@ namespace Controller;
 use App\App;
 use App\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Model\User;
 
 class AuthController extends Controller
 {
-    public function login(Request $request){
+    public function login(){
         /** @var App $app */
         $app = $this->app;
         $twig = $app->getTwig();
         echo $twig->render('login.html.twig', ['name' => 'login']);
     }
-    public function register(Request $request){
+    public function register(){
         /** @var App $app */
         $app = $this->app;
+        $user = new User($app);
+        
         $twig = $app->getTwig();
-        echo $twig->render('login.html.twig', ['name' => 'register']);
+        echo $twig->render('register.html.twig', ['user' => $user]);
     }
     public function loginCheck(Request $request){
         /** @var App $app */
         $app = $this->app;
+        $user = new User($app, $request);
+        $user->login();
         $twig = $app->getTwig();
-        echo $twig->render('login.html.twig', ['name' => 'loginCheck']);
+        echo $twig->render('home.html.twig', ['name' => 'loginCheck']);
     }
     public function registerCheck(Request $request){
         /** @var App $app */
         $app = $this->app;
+        $user = new User($app, $request);
+        $user->register();
+
         $twig = $app->getTwig();
-        echo $twig->render('login.html.twig', ['name' => 'registerCheck']);
+        echo $twig->render('home.html.twig', ['name' => 'registerCheck']);
     }
     public function logout(Request $request){
         /** @var App $app */

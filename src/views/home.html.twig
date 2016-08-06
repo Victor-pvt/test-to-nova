@@ -6,14 +6,15 @@
     <div class="container">
         <div class="row">
             <h2>
+                <span style="color: red">
+                {% if session.get('user_id') %}
+                    Dear {{ session.get('username') }}!
+                {% else %}
+                    Anonimous!
+                {% endif %}
+                </span>
                 Welcome to my test to novo!
-
             </h2>
-        </div>
-
-        <div class="row">
-            {{ name }}
-
         </div>
     </div>
 {% endblock body %}

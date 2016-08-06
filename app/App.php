@@ -9,6 +9,7 @@
 namespace App;
 
 use Doctrine\DBAL\Configuration;
+use Model\User;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -45,8 +46,9 @@ class App
         }
         $this->loader = new Twig_Loader_Filesystem(PATH_VIEWS);
         $this->twig = new Twig_Environment($this->loader, array(
-            'cache' => PATH_CACHE,
+//            'cache' => PATH_CACHE,
         ));
+        $this->twig->addGlobal('session', $session);
 
         $config = new \Doctrine\DBAL\Configuration();
         $this->connection = \Doctrine\DBAL\DriverManager::getConnection($this->config['dbal'], $config);
@@ -91,13 +93,12 @@ class App
     /**
      * записываем в сессию токе текущего юзера, сессия авторизована
      */
-    public function AuthOn()
+    public function AuthOn(User $user)
     {
         $session = new Session();
-        if(!$session->get('user_id')){
-            $session->set('user_id', 'token');
-            $this->isAuth = true;
-        }
+        $token = md5($user->getId());
+        $session->set('user_id', $token);
+        $session->set('username', $user->getUsername());
 
 //        session_start();
 //        $path = '/';
@@ -119,7 +120,6 @@ class App
         $session = new Session();
         if($session->get('user_id')){
             $session->remove('user_id');
-            $this->isAuth = false;
         }
     }
 
@@ -146,5 +146,4 @@ class App
     {
         return $this->connection;
     }
-
 }

@@ -11,14 +11,17 @@ namespace Controller;
 use App\App;
 use App\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class HomeController extends Controller
 {
-    public function home(Request $request){
+    public function home(){
         /** @var App $app */
         $app = $this->app;
         $twig = $app->getTwig();
-        echo $twig->render('login.html.twig', ['name' => 'home']);
+        echo $twig->render('home.html.twig', [
+            'name' => 'home',
+        ]);
     }
 
 }
