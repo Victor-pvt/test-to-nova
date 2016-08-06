@@ -11,4 +11,31 @@ $map = array(
     '/login' => PATH_PAGES.'/login.php',
     '/register'   => PATH_PAGES.'/register.php',
 );
-return $map;
+$routes = array(
+    '/' => [
+        'controller' => 'home',
+        'action' => 'home',
+    ],
+    '/login' => [
+        'controller' => 'auth',
+        'action' => 'login',
+    ],
+    '/register'   => [
+        'controller' => 'auth',
+        'action' => 'register',
+    ],
+    '/login/check' => [
+        'controller' => 'auth',
+        'action' => 'loginCheck',
+    ],
+    '/register/check' => [
+        'controller' => 'auth',
+        'action' => 'registerCheck',
+    ],
+    '/logout' => [
+        'controller' => 'auth',
+        'action' => 'logout',
+    ],
+);
+
+return $routes;

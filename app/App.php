@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Twig_Loader_Filesystem;
 use Twig_Environment;
+use Exception;
 
 class App
 {
@@ -51,16 +52,28 @@ class App
         $response = new Response();
 
         $path = $request->getPathInfo();
+
         if (isset($this->routes[$path])) {
             ob_start();
-            include $this->routes[$path];
+            $className = 'Controller\\' . ucfirst($this->routes[$path]['controller']).'Controller';
+            $action = $this->routes[$path]['action'];
+            $controller = new $className($this);
             $response->setContent(ob_get_clean());
         } else {
-            $response->setStatusCode(404);
-            $response->setContent('Not Found');
+            $className = 'Exeption\\ExeptionController';
+            $action = '_404Action';
+            $controller = new $className($this);
         }
 
-        $response->send();
+        if ((isset($controller)) && is_callable([$controller, $action])) {
+            if ($request) {
+                $controller->$action($request);
+            } else {
+                $controller->$action();
+            }
+        } else {
+            throw new Exception('In controller '.get_class($controller).' method '.$action.' not found!');
+        }
     }
 
     public function AuthOn(User $user)
@@ -69,5 +82,21 @@ class App
 
     public function AuthOff()
     {
+    }
+
+    /**
+     * @return Twig_Loader_Filesystem
+     */
+    public function getLoader()
+    {
+        return $this->loader;
+    }
+
+    /**
+     * @return Twig_Environment
+     */
+    public function getTwig()
+    {
+        return $this->twig;
     }
 }
