@@ -9,6 +9,9 @@ define('PATH_VIEWS', PATH_SRC . '/views');
 define('PATH_CACHE', PATH_APP . '/cache/dev');
 define('DEBUG_MODE', TRUE);
 
+error_reporting(E_ALL);
+ini_set('display_errors', DEBUG_MODE);
+
 require_once PATH_VENDOR .'/autoload.php';
 
 $app = new \App\App();

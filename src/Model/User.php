@@ -10,17 +10,25 @@ namespace Model;
 
 use App\App;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class User
 {
     protected $table_name = 'users';
     /** @var  integer */
     protected $id;
-    /** @var string */
+    /** 
+     * @var string 
+     */
     protected $username;
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $email;
-    /** @var string */
+    /** 
+     * @var string
+     */
     protected $password;
     /** @var string */
     protected $password_repeat;
@@ -40,6 +48,36 @@ class User
             $this->email = $request->get('email');
         }
     }
+    public function isIsPasswordRepeat()
+    {
+        return ($this->password_repeat == $this->password);
+    }
+    /**
+     * This method is where you define your validation rules.
+     */
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addPropertyConstraint('email', new Assert\NotBlank());
+        $metadata->addPropertyConstraint('email', new Assert\Email());
+        $metadata->addPropertyConstraint('username', new Assert\NotBlank());
+        $metadata->addPropertyConstraint('username', new Assert\Length(['min' => 5, 'max' => 50]));
+        $metadata->addPropertyConstraint('password', new Assert\NotBlank());
+        $metadata->addPropertyConstraint('password', new Assert\Length(['min' => 5, 'max' => 50]));
+        $metadata->addGetterConstraint('isPasswordRepeat', new Assert\IsTrue(array(
+            'message' => 'Пароль повторный не совпадает с первым',
+            'groups'  => array('Strict'),
+        )));
+        $metadata->setGroupSequence(array('User', 'Strict'));
+    }
+    //  Fatal error: Uncaught Symfony\Component\Validator\Exception\ValidatorException: Neither of these methods exist in class Model\User: getPasswordLegal, isPasswordLegal, hasPasswordLegal in /var/www/html/2nova/vendor/symfony/validator/Mapping/GetterMetadata.php on line 56
+//Uncaught TypeError: Argument 2 passed to Symfony\Component\Validator\Mapping\ClassMetadata::addPropertyConstraint()
+// must be an instance of Symfony\Component\Validator\Constraint, instance of Validator\Constraints\RepeatValidator given,
+// called in /var/www/html/2nova/src/Model/User.php on line 63 and defined in /var/www/html/2nova/vendor/symfony/validator/Mapping/ClassMetadata.php on line 224
+    /**
+     * проверка наличия юзера в базе, возвращает юзера массив
+     * @return bool|mixed
+     * @throws \Doctrine\DBAL\DBALException
+     */
     public function isUser(){
         $connection = $this->app->getConnection();
         $sql = "SELECT * FROM {$this->table_name} u where u.username='".$this->username."' limit 1";

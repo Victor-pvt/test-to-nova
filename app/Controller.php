@@ -14,4 +14,11 @@ class Controller {
 	function __construct(App $app) {
 		$this->app = $app;
 	}
+	/**
+	 * @param string $url
+	 */
+	public function redirect($url = '/') {
+		header("Location: {$url}");
+		exit();
+	}
 }

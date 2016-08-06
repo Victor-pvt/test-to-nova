@@ -3,13 +3,25 @@
     {{ name }}
 {% endblock %}
 {% block body %}
+    <div class="alert-message">
+        {% for key, message in session.get('errors') %}
+            <div id="flash_error_{{ loop.index }}" class="message-box alert-danger">
+                <span class="close">X</span>
+                <p>поле {{ key }}-{{ message }}</p>
+                <script type="text/javascript">setTimeout(function () {
+                        $('#flash_error_{{ loop.index }}').remove()
+                    }, 4000)</script>
+            </div>
+        {% endfor %}
+    </div>
+
     <div class="container">
         <form class="form-signin" action="/register/check" method="post" style="width: 50%;">
             <h2 class="form-signin-heading">
                 Register
             </h2>
             <input type="text" class="form-control" placeholder="Enter username" name="username"
-                   required autofocus/>
+                   required autofocus  value="{{ user.username }}"/>
             <input type="text" class="form-control" placeholder="Enter email" name="email"
                    required value="{{ user.email }}"/>
             <input type="password" class="form-control" placeholder="Enter password " name="password"
