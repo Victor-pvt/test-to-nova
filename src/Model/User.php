@@ -18,9 +18,13 @@ class User
     protected $table_name = 'users';
     /** @var  integer */
     protected $id;
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $username;
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $email;
     /** @var string */
     protected $password;
@@ -98,7 +102,7 @@ class User
                 return $this;
             }
         }
-        return false;
+        return null;
     }
 
     /**
@@ -126,7 +130,7 @@ class User
             }
         }
 
-        return false;
+        return null;
     }
 
     /**

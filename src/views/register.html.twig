@@ -6,20 +6,33 @@
 {% block body %}
     <div class="container">
         <form class="form-signin" action="/register/check" method="post" style="width: 50%;">
+            {{ form_errors(form) }}
+            {{ form_widget(form._token) }}
             <h2 class="form-signin-heading">
                 Register
             </h2>
-            <input type="text" class="form-control" placeholder="Enter username" name="username"
-                   required autofocus  value="{{ user.username }}"/>
-            <input type="text" class="form-control" placeholder="Enter email" name="email"
-                   required value="{{ user.email }}"/>
-            <input type="password" class="form-control" placeholder="Enter password " name="password"
-                   required value="{{ user.password }}"/>
-            <input type="password" class="form-control" placeholder="Repeat password " name="password_repeat"
-                   required value="{{ user.passwordRepeat }}"/>
-            <input type="hidden" class="form-control" name="token" value="crsf_token"/>
-            <button class="btn btn-lg btn-primary btn-block" type="submit">Enter
-            </button>
+            <div class="row">
+                {{ form_label(form.username) }}
+                {{ form_widget(form.username) }}
+                {{ form_errors(form.username) }}
+            </div>
+            <div class="row">
+                {{ form_label(form.email) }}
+                {{ form_widget(form.email) }}
+            </div>
+            <div class="row">
+                {{ form_label(form.password) }}
+                {{ form_widget(form.password) }}
+            </div>
+            <div class="row">
+                {{ form_label(form.password_repeat) }}
+                {{ form_widget(form.password_repeat) }}
+            </div>
+
+            <div class="row">
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Enter
+                </button>
+            </div>
         </form>
     </div>
 {% endblock body %}

@@ -8,17 +8,11 @@
  */
 namespace Controller;
 
-use App\App;
 use App\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Model\User;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator;
-use Symfony\Component\Form\Forms;
-use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Validator\Validation;
-use Exception;
 
 class AuthController extends Controller
 {
@@ -38,7 +32,11 @@ class AuthController extends Controller
         /** @var User $user */
         $user = new User($this->app);
         $twig = $this->app->getTwig();
-        echo $twig->render('register.html.twig', ['user' => $user,]);
+        $form = $this->app->getFormFactory()->create('Model\UserType', $user);
+        echo $twig->render('register.html.twig', [
+            'user' => $user,
+            'form' => $form->createView(),
+        ]);
         $this->clearSession();
     }
 
@@ -57,10 +55,32 @@ class AuthController extends Controller
     }
 
     /**
-     * страница обработки формы регистрации
+     * страница обработки формы регистрации через компонентформ
      * @param Request $request
      */
     public function registerCheck(Request $request){
+        /** @var User $user */
+        $user = new User($this->app);
+        $form = $this->app->getFormFactory()->create('Model\UserType', $user);
+        $form->handleRequest();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user = $form->getData();
+            $this->registerSession($user->register());
+            $this->redirect('/');
+        }
+        $errors=[];
+        foreach ($form->getErrors(true) as $violation){
+            $errors[] = $violation->getMessage();
+        }
+
+        $this->app->getSession()->set('errors', $errors);
+        $this->redirect('/register');
+    }
+    /**
+     * страница обработки формы регистрации
+     * @param Request $request
+     */
+    public function _registerCheck(Request $request){
         /** @var User $user */
         $user = new User($this->app, $request);
         $validator = Validation::createValidatorBuilder()

@@ -8,10 +8,7 @@
  */
 namespace Controller;
 
-use App\App;
 use App\Controller;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 class HomeController extends Controller
 {

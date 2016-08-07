@@ -9,9 +9,12 @@
 namespace App;
 
 use Model\User;
+use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Translation\Translator;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Twig_Loader_Filesystem;
 use Twig_Environment;
 use Exception;
@@ -32,6 +35,12 @@ class App
     private $loader;
     /** @var  Session */
     private $session;
+    /** @var  FormFactory */
+    private $formFactory;
+    /** @var  ValidatorInterface */
+    private $validator;
+    /** @var  Translator */
+    private $translator;
 
     /**
      * Конструктор класса
@@ -41,16 +50,10 @@ class App
     {
         $this->config = require_once PATH_APP.'/config.php';
         $this->routes = require_once PATH_APP.'/routes.php';
-        $this->session = new Session();
+        require_once PATH_APP.'/setup.php';
         if($this->session->get('user_id')){
             $this->isAuth = true;
         }
-        $this->loader = new Twig_Loader_Filesystem(PATH_VIEWS);
-        $this->twig = new Twig_Environment($this->loader, array(
-//            'cache' => PATH_CACHE,
-        ));
-        $this->twig->addGlobal('session', $this->session);
-
         $config = new \Doctrine\DBAL\Configuration();
         $this->connection = \Doctrine\DBAL\DriverManager::getConnection($this->config['dbal'], $config);
     }
@@ -167,4 +170,29 @@ class App
     {
         return $this->isAuth;
     }
+
+    /**
+     * @return FormFactory
+     */
+    public function getFormFactory()
+    {
+        return $this->formFactory;
+    }
+
+    /**
+     * @return ValidatorInterface
+     */
+    public function getValidator()
+    {
+        return $this->validator;
+    }
+
+    /**
+     * @return Translator
+     */
+    public function getTranslator()
+    {
+        return $this->translator;
+    }
+    
 }
