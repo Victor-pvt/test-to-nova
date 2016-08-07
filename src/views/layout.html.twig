@@ -53,6 +53,30 @@
     <div class="wrap-content">
         <div class="jumbotron">
             <div class="container">
+                {% block flash %}
+                    <div class="alert-message">
+                        {% for key, message in session.get('errors') %}
+                            <div id="flash_error_{{ loop.index }}" class="message-box alert-danger">
+                                <span class="close">X</span>
+                                <p>поле {{ key }}-{{ message }}</p>
+                                <script type="text/javascript">setTimeout(function () {
+                                        $('#flash_error_{{ loop.index }}').remove()
+                                    }, 3000)</script>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="alert-message">
+                        {% for key, message in session.get('success') %}
+                            <div id="flash_error_{{ loop.index }}" class="message-box alert-success">
+                                <span class="close">X</span>
+                                <p>{{ key }} - {{ message }}</p>
+                                <script type="text/javascript">setTimeout(function () {
+                                        $('#flash_error_{{ loop.index }}').remove()
+                                    }, 3000)</script>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endblock flash %}
                 {% block body %}{% endblock body %}
             </div>
         </div>

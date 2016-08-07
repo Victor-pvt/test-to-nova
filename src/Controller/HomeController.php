@@ -15,13 +15,12 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
 class HomeController extends Controller
 {
+    /**
+     * домашняя страница, с очищение флеш переменных сессии
+     */
     public function home(){
-        /** @var App $app */
-        $app = $this->app;
-        $twig = $app->getTwig();
-        echo $twig->render('home.html.twig', [
-            'name' => 'home',
-        ]);
+        $twig = $this->app->getTwig();
+        echo $twig->render('home.html.twig', ['name' => 'home',]);
+        $this->clearSession();
     }
-
 }

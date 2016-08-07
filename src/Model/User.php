@@ -18,17 +18,11 @@ class User
     protected $table_name = 'users';
     /** @var  integer */
     protected $id;
-    /** 
-     * @var string 
-     */
+    /** @var string */
     protected $username;
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $email;
-    /** 
-     * @var string
-     */
+    /** @var string */
     protected $password;
     /** @var string */
     protected $password_repeat;
@@ -39,7 +33,6 @@ class User
 
     function __construct(App $app, Request $request=null){
         $this->salt = md5(time());
-        $this->token = md5($this->salt.time());
         $this->app = $app;
         if($request){
             $this->username = $request->get('username');
@@ -48,12 +41,17 @@ class User
             $this->email = $request->get('email');
         }
     }
+
+    /**
+     * проверка эквивалентности воода пароля и повторного ввода пароля
+     * @return bool
+     */
     public function isIsPasswordRepeat()
     {
         return ($this->password_repeat == $this->password);
     }
     /**
-     * This method is where you define your validation rules.
+     * определение правил валидаторов класса
      */
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
@@ -69,10 +67,6 @@ class User
         )));
         $metadata->setGroupSequence(array('User', 'Strict'));
     }
-    //  Fatal error: Uncaught Symfony\Component\Validator\Exception\ValidatorException: Neither of these methods exist in class Model\User: getPasswordLegal, isPasswordLegal, hasPasswordLegal in /var/www/html/2nova/vendor/symfony/validator/Mapping/GetterMetadata.php on line 56
-//Uncaught TypeError: Argument 2 passed to Symfony\Component\Validator\Mapping\ClassMetadata::addPropertyConstraint()
-// must be an instance of Symfony\Component\Validator\Constraint, instance of Validator\Constraints\RepeatValidator given,
-// called in /var/www/html/2nova/src/Model/User.php on line 63 and defined in /var/www/html/2nova/vendor/symfony/validator/Mapping/ClassMetadata.php on line 224
     /**
      * проверка наличия юзера в базе, возвращает юзера массив
      * @return bool|mixed
@@ -90,6 +84,7 @@ class User
     }
     /**
      * авторизация пользователя
+     * @return $this|bool
      */
     public function login(){
         $row = $this->isUser();
@@ -103,10 +98,13 @@ class User
                 return $this;
             }
         }
+        return false;
     }
 
     /**
      * регистрация пользователя
+     * @return $this|bool
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function register(){
         $row = $this->isUser();
@@ -119,20 +117,20 @@ class User
                 $st->bindValue(":username", $this->username);
                 $st->bindValue(":email", $this->email);
                 $st->bindValue(":salt", $this->salt);
-                $success = $st->execute();
+                $st->execute();
                 $id = $this->app->getConnection()->lastInsertId();
                 $this->id = $id;
                 $this->password = $password;
                 $this->app->AuthOn($this);
                 return $this;
             }
-        }else{
-            return 'пользователь существует или еще какая причина';
         }
+
+        return false;
     }
 
     /**
-     * @return mixed
+     * @return integer
      */
     public function getId()
     {
@@ -140,7 +138,7 @@ class User
     }
 
     /**
-     * @param mixed $id
+     * @param integer $id
      */
     public function setId($id)
     {
@@ -148,7 +146,7 @@ class User
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getUsername()
     {
@@ -156,7 +154,7 @@ class User
     }
 
     /**
-     * @param mixed $username
+     * @param string $username
      */
     public function setUsername($username)
     {
@@ -164,7 +162,7 @@ class User
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getEmail()
     {
@@ -172,7 +170,7 @@ class User
     }
 
     /**
-     * @param mixed $email
+     * @param string $email
      */
     public function setEmail($email)
     {
@@ -180,7 +178,7 @@ class User
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getPassword()
     {
@@ -188,7 +186,7 @@ class User
     }
 
     /**
-     * @param mixed $password
+     * @param string $password
      */
     public function setPassword($password)
     {
@@ -196,7 +194,7 @@ class User
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getSalt()
     {
@@ -204,7 +202,7 @@ class User
     }
 
     /**
-     * @param mixed $salt
+     * @param string $salt
      */
     public function setSalt($salt)
     {
@@ -212,7 +210,7 @@ class User
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getPasswordRepeat()
     {
@@ -220,7 +218,7 @@ class User
     }
 
     /**
-     * @param mixed $password_repeat
+     * @param string $password_repeat
      */
     public function setPasswordRepeat($password_repeat)
     {

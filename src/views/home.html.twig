@@ -10,10 +10,13 @@
                 {% if session.get('user_id') %}
                     Dear {{ session.get('username') }}!
                 {% else %}
-                    Anonimous!
+                    Anonymous!
                 {% endif %}
                 </span>
                 Welcome to my test to novo!
+                {% if not session.get('user_id') %}
+                    <a href="/login"> Login </a>
+                {% endif %}
             </h2>
         </div>
     </div>
